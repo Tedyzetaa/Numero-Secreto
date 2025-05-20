@@ -1,88 +1,83 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    color: white;
+/* Variáveis */
+:root {
+  --clr-primary: linear-gradient(45deg, #ff6b6b, #f06595);
+  --clr-primary-hover: linear-gradient(45deg, #4c6ef5, #22b8cf);
+  --clr-bg: #01080e;
+  --clr-text: #fff;
+  --radius: 1rem;
+  --transition: 0.3s ease;
 }
 
+/* Reset e body */
+* { box-sizing: border-box; margin:0; padding:0; }
 body {
-    background: linear-gradient(#1354A5 0%, #041832 33.33%, #041832 66.67%, #01080E 100%);
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex; align-items: center; justify-content: center;
+  min-height:100vh; background: var(--clr-bg); color: var(--clr-text);
+  font-family: 'Inter', sans-serif;
 }
 
-
-body::before {
-    background-image: url("img/code.png");
-    background-repeat: no-repeat;
-    background-position: right;
-    content: "";
-    display: block;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0.4;
+/* Título e botão iniciar */
+.game__title { font-size:2rem; margin-bottom:1rem; }
+.game__start-btn {
+  padding:0.8rem 1.6rem; font-size:1rem; border:none; cursor:pointer;
+  background: var(--clr-primary); border-radius:var(--radius);
+  transition: background var(--transition), transform var(--transition);
+}
+.game__start-btn:hover {
+  background: var(--clr-primary-hover); transform: translateY(-2px);
 }
 
-.container {
-    width: 1200px;
-    height: 600px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 24px;
-    border: 1px solid #1875E8;
-    box-shadow: 4px 4px 20px 0px rgba(1, 8, 14, 0.15);
-    background-image: url("img/Ruido.png");
-    background-size: 100% 100%;
-    position: relative;
+/* Centraliza o dialog e adiciona overlay */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  background: var(--clr-bg);
+  color: var(--clr-text);
+  animation: fadeIn 0.3s ease;
+  z-index: 1000;
+}
+.modal::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+@keyframes fadeIn {
+  from {opacity:0; transform: translate(-50%, -60%);}
+  to {opacity:1; transform: translate(-50%, -50%);}
 }
 
-.container__conteudo {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    bottom: 0;
+.modal__form { display:flex; flex-direction:column; gap:1rem; }
+.modal__input {
+  padding:0.8rem; font-size:1rem; border:1px solid #444; border-radius:var(--radius);
+  background: #111; color: #fff;
 }
+.modal__actions { display:flex; justify-content:flex-end; gap:0.5rem; }
 
-.container__informacoes {
-    flex: 1;
-    padding: 20px;
+.btn {
+  padding:0.6rem 1.2rem; border:none; border-radius:var(--radius);
+  cursor:pointer; font-weight:600; transition: transform var(--transition);
 }
+.btn--primary { background: var(--clr-primary); color:#fff; }
+.btn--primary:hover { background: var(--clr-primary-hover); transform: translateY(-2px); }
+.btn--secondary { background: transparent; color:#ccc; }
+.btn--secondary:hover { color:#fff; }
 
-.container__botao {
-    border-radius: 16px;
-    background: #1875E8;
-    padding: 16px 24px;
-    width: 100%;
-    font-size: 24px;
-    font-weight: 700;
-    border: none;
-    margin-top: 16px;
+/* Card de resultado */
+.result-card {
+  margin-top:2rem; padding:1.5rem; background:#112; border-radius:var(--radius);
+  box-shadow:0 4px 16px rgba(0,0,0,0.3); text-align:center;
+  display:none; animation: popIn 0.4s ease forwards;
 }
-
-.container__texto {
-    margin: 16px 0 16px 0;
+@keyframes popIn {
+  from {opacity:0; transform: scale(0.9);}
+  to {opacity:1; transform: scale(1);}
 }
-
-.container__texto-azul {
-    color: #1875E8;
-}
-
-h1 {
-    font-family: 'Chakra Petch', sans-serif;
-    font-size: 72px;
-}
-
-h2,
-p,
-button {
-    font-family: 'Inter', sans-serif;
-}
-
-h2 {
-    font-size: 32px;
-    font-weight: 400;
-}
+.result-card h3 { margin-bottom:0.5rem; font-size:1.5rem; }
+.result-card p  { font-size:1rem; }

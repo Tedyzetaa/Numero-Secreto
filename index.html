@@ -1,31 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Inter:wght@400;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <title>Número Secreto</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Número Secreto</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-    <div class="container">
-        <div class="container__conteudo">
-            <img src="./img/robot.png" alt="robô mergulhador" class="container__imagem-robo" />
-            <div class="container__informacoes">
-                <img src="./img/trophy.png" alt="ícone de um troféu" />
-                 <div class="container__texto">
-                    <h1>Você <span class="container__texto-azul">acertou!</span></h1>
-                    <h2>Você descobriu o número secreto!</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="app.js" defer></script>
-</body>
+  <main class="game">
+    <h1 class="game__title">Jogo do Número Secreto</h1>
+    <button class="game__start-btn">Iniciar Jogo</button>
 
+    <!-- Dialog customizado -->
+    <dialog class="modal" id="modal-jogo" aria-modal="true" role="dialog" aria-labelledby="modal-title">
+      <form method="dialog" class="modal__form">
+        <h2 id="modal-title">Escolha um número máximo:</h2>
+        <input type="number" id="input-max" class="modal__input" min="1" required />
+        <menu class="modal__actions">
+          <button class="btn btn--primary">Confirmar</button>
+          <button class="btn btn--secondary" value="cancel">Cancelar</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <!-- Card de resultado -->
+    <div class="result-card" id="result-card" aria-live="polite"></div>
+  </main>
+
+  <script src="app.js" defer></script>
+</body>
 </html>

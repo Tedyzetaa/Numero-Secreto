@@ -1,36 +1,49 @@
-alert('Boas Vindas ao jogo do número secreto');
-let numeroMaximo;
-numeroMaximo = prompt('Escolha um número maximo');
-let numeroSecreto = parseInt(Math.random() * numeroMaximo + 1); 
-console.log(numeroSecreto);
-let chute;
-let tentativas = 1;
+const startBtn = document.querySelector('.game__start-btn');
+const modal    = document.getElementById('modal-jogo');
+const inputMax = document.getElementById('input-max');
+const resultCard = document.getElementById('result-card');
 
+let secret, attempts;
 
-// enquanto chute não for igual ao numeroSecreto
+startBtn.addEventListener('click', () => {
+  modal.showModal();
+  inputMax.value = '';
+  resultCard.style.display = 'none';
+  inputMax.focus();
+});
 
-while (chute != numeroSecreto) {
-    chute = prompt(`Escolha um número entre 1 e ${numeroMaximo}`);
-    //se o chute for igual ao número secreto
-    if (numeroSecreto == chute) {
-            break;
-    } else {
-        if (numeroSecreto > chute){
-            alert(`O número secreto é maior que ${chute}`);
-        } else {
-            alert(`O número secreto é menor que ${chute}`);
-        }
-        // tentativas = tentativas + 1;
-        tentativas++;
+modal.addEventListener('close', () => {
+  if (modal.returnValue === 'cancel') return;
+  const maxNum = parseInt(inputMax.value);
+  if (!maxNum || maxNum < 1) {
+    alert('Insira um valor válido.');
+    return;
+  }
+  secret = Math.floor(Math.random() * maxNum) + 1;
+  attempts = 0;
+  play(secret, maxNum);
+});
+
+function play(secret, max) {
+  const loop = () => {
+    const answer = prompt(`Digite um número entre 1 e ${max}`);
+    if (answer === null) return;
+    attempts++;
+    const guess = Number(answer);
+    if (guess === secret) {
+      return showResult(true);
     }
+    alert(guess < secret ? 'O número é maior!' : 'O número é menor!');
+    loop();
+  };
+  loop();
 }
 
-// if (tentativas > 1){
-//     alert(`Boa, Tu descobriu o número secreto ${numeroSecreto} com ${tentativas} tentativas`);    
-// } else {
-//         alert(`Boa, Tu descobriu o número secreto ${numeroSecreto} com ${tentativas} tentativa`);
-// }
-
-let palavraTentativa = tentativas > 1 ? 'tentativas' : 'tentativa'
-alert(`Boa, Tu descobriu o número secreto ${numeroSecreto} com ${tentativas} ${palavraTentativa}`);
-
+function showResult(win) {
+  resultCard.innerHTML = `
+    <h3>${win ? 'Parabéns!' : 'Fim de jogo'}</h3>
+    <p>Você ${win ? 'acertou' : 'não acertou'} o número <strong>${secret}</strong> em ${attempts} tentativa${attempts>1?'s':''}.</p>
+  `;
+  resultCard.style.display = 'block';
+  startBtn.textContent = 'Jogar Novamente';
+}
