@@ -5,10 +5,64 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Número Secreto</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .scoreboard {
+      background: #112;
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+    .player-name {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .player-name input {
+      padding: 0.5rem;
+      border-radius: var(--radius);
+      border: none;
+      font-size: 1rem;
+    }
+    .ranking {
+      background: #113;
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-top: 1rem;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+  </style>
 </head>
 <body>
   <main class="game">
     <h1 class="game__title">Jogo do Número Secreto</h1>
+
+    <div class="player-name">
+      <label for="name-input">Seu nome: </label>
+      <input type="text" id="name-input" placeholder="Digite seu nome" />
+    </div>
+
+    <div class="scoreboard">
+      <p>Jogador: <span id="player-display">-</span></p>
+      <p>Pontuação: <span id="score">0</span></p>
+      <p>Recorde: <span id="record">0</span> (<span id="record-holder">-</span>)</p>
+    </div>
+
+    <div class="ranking">
+      <h3>Top 5 Jogadores</h3>
+      <ol id="ranking-list"></ol>
+    </div>
+
     <button class="game__start-btn">Iniciar Jogo</button>
 
     <!-- Dialog customizado -->
@@ -27,6 +81,114 @@
     <div class="result-card" id="result-card" aria-live="polite"></div>
   </main>
 
-  <script src="app.js" defer></script>
+  <script>
+    const startBtn = document.querySelector('.game__start-btn');
+    const modal = document.getElementById('modal-jogo');
+    const inputMax = document.getElementById('input-max');
+    const resultCard = document.getElementById('result-card');
+    const scoreEl = document.getElementById('score');
+    const recordEl = document.getElementById('record');
+    const recordHolderEl = document.getElementById('record-holder');
+    const nameInput = document.getElementById('name-input');
+    const playerDisplay = document.getElementById('player-display');
+    const rankingList = document.getElementById('ranking-list');
+
+    let secret, attempts;
+    let score = 0;
+    let playerName = '';
+
+    let recordData = JSON.parse(localStorage.getItem('recordData')) || { name: '-', score: 0 };
+    let ranking = JSON.parse(localStorage.getItem('ranking')) || [];
+
+    recordEl.textContent = recordData.score;
+    recordHolderEl.textContent = recordData.name;
+    renderRanking();
+
+    startBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      if (!name) {
+        alert('Digite seu nome antes de iniciar.');
+        return;
+      }
+      playerName = name;
+      playerDisplay.textContent = playerName;
+      modal.showModal();
+      inputMax.value = '';
+      resultCard.style.display = 'none';
+      inputMax.focus();
+    });
+
+    modal.addEventListener('close', () => {
+      if (modal.returnValue === 'cancel') return;
+      const maxNum = parseInt(inputMax.value);
+      if (!maxNum || maxNum < 1) {
+        alert('Insira um valor válido.');
+        return;
+      }
+      secret = Math.floor(Math.random() * maxNum) + 1;
+      attempts = 0;
+      play(secret, maxNum);
+    });
+
+    function play(secret, max) {
+      const loop = () => {
+        const answer = prompt(`BOT: Escolha um número de 1 à ${max}`);
+        if (answer === null) return;
+        attempts++;
+        const guess = Number(answer);
+        if (guess === secret) {
+          score += 10;
+          updateScore();
+          return showResult(true);
+        } else if (Math.abs(guess - secret) === 1) {
+          score += 5;
+          updateScore();
+          alert('Quase! Você chegou bem perto.');
+        } else {
+          alert(guess < secret ? 'O número é maior!' : 'O número é menor!');
+        }
+        loop();
+      };
+      loop();
+    }
+
+    function showResult(win) {
+      resultCard.innerHTML = `
+        <h3>${win ? 'Parabéns!' : 'Fim de jogo'}</h3>
+        <p>${playerName}, você ${win ? 'acertou' : 'não acertou'} o número <strong>${secret}</strong> em ${attempts} tentativa${attempts > 1 ? 's' : ''}.</p>
+      `;
+      resultCard.style.display = 'block';
+      startBtn.textContent = 'Jogar Novamente';
+    }
+
+    function updateScore() {
+      scoreEl.textContent = score;
+      if (score > recordData.score) {
+        recordData = { name: playerName, score };
+        localStorage.setItem('recordData', JSON.stringify(recordData));
+        recordEl.textContent = recordData.score;
+        recordHolderEl.textContent = recordData.name;
+      }
+      const existing = ranking.find(entry => entry.name === playerName);
+      if (existing) {
+        if (score > existing.score) existing.score = score;
+      } else {
+        ranking.push({ name: playerName, score });
+      }
+      ranking.sort((a, b) => b.score - a.score);
+      ranking = ranking.slice(0, 5);
+      localStorage.setItem('ranking', JSON.stringify(ranking));
+      renderRanking();
+    }
+
+    function renderRanking() {
+      rankingList.innerHTML = '';
+      ranking.forEach((entry, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${index + 1}. ${entry.name}: ${entry.score}`;
+        rankingList.appendChild(li);
+      });
+    }
+  </script>
 </body>
 </html>
