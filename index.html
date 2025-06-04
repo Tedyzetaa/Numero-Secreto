@@ -127,6 +127,8 @@
       }
       secret = Math.floor(Math.random() * maxNum) + 1;
       attempts = 0;
+      score = 0; // Zera a pontuação por rodada
+      updateScore();
       play(secret, maxNum);
     });
 
@@ -137,13 +139,14 @@
         attempts++;
         const guess = Number(answer);
         if (guess === secret) {
-          score += 10;
+          score = 10;
           updateScore();
           return showResult(true);
         } else if (Math.abs(guess - secret) === 1) {
-          score += 5;
+          score = 5;
           updateScore();
           alert('Quase! Você chegou bem perto.');
+          return showResult(false);
         } else {
           alert(guess < secret ? 'O número é maior!' : 'O número é menor!');
         }
